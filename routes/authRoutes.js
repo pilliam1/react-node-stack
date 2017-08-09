@@ -10,4 +10,13 @@ module.exports = (app) => {
 
     //create route handler for callback recieved from google once user grant permission
     app.get('/auth/google/callback', passport.authenticate('google'));
+
+    app.get('/api/logout', (req, res) => {
+        req.logout();
+        res.send(req.user);
+    });
+
+    app.get('/api/current_user', (req, res) => {
+        res.send(req.user);
+    });
 };
