@@ -7,7 +7,6 @@ const keys = require('./config/keys')
 require('./models/user');
 require('./services/passport.js');
 
-
 mongoose.connect(keys.mongoURI);
 
 const app = express();
@@ -27,6 +26,23 @@ app.use(passport.session());
 
 require('./routes/authRoutes')(app);
 require('./routes/billingRoutes')(app);
+
+//only executed in production
+if(process.env.NODE_ENV === 'production'){
+    //Express will serve up production assets
+    //ie: main.js, or main.css
+
+    //if there is a request that we dont have a route handler for, then look into 'client/build'
+    //express will check to see if there is a SPECIFIC file that matches up with what that request is looking for.
+    app.use(express.static('client/build'));
+    //Express serve up index.html
+    //if there is nothing in authRoute billingRoute and nothing to match up with in 'client/build', exhausted all options
+    //expect that it just needs the html    
+    const path = require('path');
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    })
+}
 
 
 //dynamic port binding.
